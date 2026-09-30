@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UX/UI Design Service & Template | Aura Design Studio</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Prompt & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- JS Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Prompt', 'Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            cyan: '#38bdf8',
+                            cyanHover: '#0284c7',
+                            dark: '#0f172a',
+                            card: '#f8fafc',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Smooth Image Transitions */
+        .slide-fade-enter {
+            animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0.3; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Glassmorphism Blur Effects */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+
+        /* Toast notifications */
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        .toast-enter {
+            animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .toast-exit {
+            animation: fadeOut 0.3s ease forwards;
+        }
+
+        /* Thumbnail active indicator glow */
+        .thumbnail-active {
+            border-color: #0284c7 !important;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.35);
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col font-sans">
+
+    <header class="bg-white/90 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white shadow-md shadow-cyan-200">
+                    <i class="fa-solid fa-layer-group text-lg"></i>
+                </div>
+                <div>
+                    <span class="font-bold text-lg tracking-tight text-slate-900 leading-none block">AURA<span class="text-cyan-600">.UI</span></span>
+                    <span class="text-[10px] text-slate-400 font-medium tracking-widest uppercase">UX/UI Design Marketplace</span>
+                </div>
+            </div>
+
+            <!-- Breadcrumb Navigation -->
+            <nav class="hidden md:flex items-center gap-2 text-xs font-medium text-slate-500">
+                <a href="../index.html" class="hover:text-slate-900 transition">หน้าแรก</a>
+                <i class="fa-solid fa-chevron-right text-[9px] text-slate-300"></i>
+                <a href="#" class="hover:text-slate-900 transition">ดีไซน์เซอร์วิส</a>
+                <i class="fa-solid fa-chevron-right text-[9px] text-slate-300"></i>
+                <span class="text-slate-900 font-semibold">Web UX/UI Design System & Service</span>
+            </nav>
+
+            <!-- Quick Action Buttons -->
+            <div class="flex items-center gap-3">
+                <button onclick="toggleWishlist()" id="wishlist-btn" class="p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 transition text-sm">
+                    <i class="fa-regular fa-heart"></i>
+                </button>
+                <button onclick="shareProject()" class="p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 transition text-sm">
+                    <i class="fa-solid fa-share-nodes"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed top-20 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-6">
+
+        <!-- Title & Header Info -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
+            <div>
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="bg-cyan-100 text-cyan-800 text-xs font-semibold px-2.5 py-0.5 rounded-md">Featured UX/UI Package</span>
+                    <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-0.5 rounded-md flex items-center gap-1">
+                        <i class="fa-solid fa-circle-check text-[10px]"></i> พร้อมใช้งาน & สั่งทำพิเศษ
+                    </span>
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                    บริการออกแบบ Web & Mobile UX/UI Design System
+                </h1>
+                <p class="text-xs sm:text-sm text-slate-500 mt-1">
+                    ออกแบบด้วย Figma ระดับพรีเมียม ตอบโจทย์ Conversion Rate และ User Experience สำหรับธุรกิจดิจิทัล
+                </p>
+            </div>
+            <div class="flex items-center gap-4 border-t md:border-t-0 md:border-l border-slate-100 pt-3 md:pt-0 md:pl-6 flex-shrink-0">
+                <div class="text-center">
+                    <div class="text-amber-500 font-bold text-sm flex items-center gap-1 justify-center">
+                        <i class="fa-solid fa-star"></i> 4.9 <span class="text-slate-400 font-normal text-xs">(48 รีวิว)</span>
+                    </div>
+                    <div class="text-[11px] text-slate-400 mt-0.5">คะแนนความพึงพอใจ</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN LAYOUT GRID MATCHING USER MOCKUP -->
+        <!-- Columns: Left (Gallery & Details) | Right (Tech Info & Order Box) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            
+            <!-- LEFT COLUMN - TOP: Main Image Gallery (.hon) -->
+            <div class="lg:col-span-8 flex flex-col">
+                <main class="hon bg-slate-800 rounded-3xl p-4 sm:p-5 shadow-lg border border-slate-700 relative flex-1 flex flex-col justify-between overflow-hidden group" aria-label="แกลเลอรีภาพการเดินทาง">
+                    
+                    <!-- Background Subtle Glow -->
+                    <div class="absolute -right-20 -top-20 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                    <div class="hon__slider flex-1 flex flex-col justify-between relative z-10 min-h-[380px] sm:min-h-[440px]">
+                        
+                        <!-- Main Preview Image Stage -->
+                        <div class="hon__stage relative flex-1 bg-slate-950 rounded-2xl overflow-hidden border border-slate-700/60 flex items-center justify-center">
+                            
+                            <!-- Main Showcase Image -->
+                            <img id="main-slide-img" class="hon__image w-full h-full object-cover transition-opacity duration-300 opacity-100 cursor-zoom-in" 
+                                 src="https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=1200&q=80" 
+                                 alt="ดูรูปดีไซน์เว็บ" 
+                                 onclick="openLightbox()"
+                                 data-slide-image>
+                            
+                            <!-- Overlay Label ("ดูรูปดีไซน์เว็บ") -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/40 pointer-events-none flex flex-col justify-between p-6">
+                                <div class="flex items-center justify-between">
+                                    <span class="bg-slate-900/80 backdrop-blur-md text-cyan-400 text-xs font-mono font-medium px-3 py-1 rounded-full border border-cyan-500/30">
+                                        <i class="fa-regular fa-eye mr-1"></i> Preview 0<span id="slide-num-badge">1</span>
+                                    </span>
+                                    <span class="bg-slate-900/70 text-slate-300 text-xs font-medium px-2.5 py-1 rounded-lg backdrop-blur-sm">
+                                        คลิกขยายรูปใหญ่
+                                    </span>
+                                </div>
+                                
+                                <div class="mb-14 sm:mb-16">
+                                    <h2 id="slide-title-text" class="text-xl sm:text-2xl font-bold text-white drop-shadow-md">
+                                        ดูรูปดีไซน์เว็บ: หน้า Dashboard & UI Components
+                                    </h2>
+                                    <p id="slide-desc-text" class="text-xs sm:text-sm text-slate-300 drop-shadow mt-1">
+                                        ตัวอย่างเลย์เอาต์ระบบจัดการหลังบ้าน พร้อมดีไซน์ Responsive แบบพรีเมียม
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Controls Prev/Next -->
+                            <button onclick="prevSlide()" class="hon__control hon__control--previous absolute left-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-slate-900/80 hover:bg-cyan-600 text-white flex items-center justify-center transition backdrop-blur-sm border border-slate-700/80 shadow-md group-hover:opacity-100" type="button" aria-label="ภาพก่อนหน้า">
+                                <i class="fa-solid fa-chevron-left text-sm"></i>
+                            </button>
+                            <button onclick="nextSlide()" class="hon__control hon__control--next absolute right-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-slate-900/80 hover:bg-cyan-600 text-white flex items-center justify-center transition backdrop-blur-sm border border-slate-700/80 shadow-md group-hover:opacity-100" type="button" aria-label="ภาพถัดไป">
+                                <i class="fa-solid fa-chevron-right text-sm"></i>
+                            </button>
+                        </div>
+
+                        <!-- Details Counter & Sub-info -->
+                        <div class="hon__details flex items-center justify-between pt-3 pb-2 text-xs text-slate-400 font-medium">
+                            <p class="hon__counter text-cyan-400 font-mono" data-slide-counter><span id="current-slide-idx">1</span> / 3</p>
+                            <p class="hon__caption hidden sm:block text-slate-300" data-slide-caption>คลิกปุ่มหรือรูปด้านล่างเพื่อเลือกดูภาพตัวอย่างดีไซน์</p>
+                        </div>
+
+                        <!-- 3 Thumbnail Boxes at Bottom-Right matching wireframe mockup -->
+                        <div class="hon__thumbnails flex items-center justify-end gap-3 pt-2" role="tablist" aria-label="เลือกภาพแกลเลอรี">
+                            
+                            <!-- Thumbnail 1 -->
+                            <button onclick="setSlide(0)" id="thumb-0" class="hon__thumbnail thumbnail-active relative w-16 sm:w-20 h-16 sm:h-20 rounded-xl overflow-hidden border-2 border-slate-600 bg-slate-900 transition-all transform hover:scale-105" type="button" role="tab" aria-selected="true" aria-label="ดูภาพที่ 1" data-slide="0">
+                                <img src="https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=240&q=80" alt="UI Dashboard Preview" class="w-full h-full object-cover">
+                                <span class="absolute bottom-1 right-1 bg-slate-950/80 text-[10px] text-white px-1.5 py-0.2 rounded font-mono">1</span>
+                            </button>
+                            
+                            <!-- Thumbnail 2 -->
+                            <button onclick="setSlide(1)" id="thumb-1" class="hon__thumbnail relative w-16 sm:w-20 h-16 sm:h-20 rounded-xl overflow-hidden border-2 border-slate-700 bg-slate-900 transition-all transform hover:scale-105 opacity-70 hover:opacity-100" type="button" role="tab" aria-selected="false" aria-label="ดูภาพที่ 2" data-slide="1">
+                                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=240&q=80" alt="UI Mobile App Analytics" class="w-full h-full object-cover">
+                                <span class="absolute bottom-1 right-1 bg-slate-950/80 text-[10px] text-white px-1.5 py-0.2 rounded font-mono">2</span>
+                            </button>
+                            
+                            <!-- Thumbnail 3 -->
+                            <button onclick="setSlide(2)" id="thumb-2" class="hon__thumbnail relative w-16 sm:w-20 h-16 sm:h-20 rounded-xl overflow-hidden border-2 border-slate-700 bg-slate-900 transition-all transform hover:scale-105 opacity-70 hover:opacity-100" type="button" role="tab" aria-selected="false" aria-label="ดูภาพที่ 3" data-slide="2">
+                                <img src="https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?auto=format&fit=crop&w=240&q=80" alt="UX Wireframe Flow" class="w-full h-full object-cover">
+                                <span class="absolute bottom-1 right-1 bg-slate-950/80 text-[10px] text-white px-1.5 py-0.2 rounded font-mono">3</span>
+                            </button>
+
+                        </div>
+
+                    </div>
+                </main>
+            </div>
+
+            <!-- RIGHT COLUMN - TOP: Technical Info Box (.box1) -->
+            <div class="lg:col-span-4 flex flex-col">
+                <div class="box1 bg-slate-800 text-white rounded-3xl p-6 shadow-lg border border-slate-700 flex-1 flex flex-col justify-between relative overflow-hidden">
+                    
+                    <!-- Decorative BG Element -->
+                    <div class="absolute right-0 top-0 translate-x-1/3 -translate-y-1/3 w-40 h-40 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+                    <div class="space-y-6 relative z-10">
+                        <!-- Header matching wireframe "ส่วนข้อมูลเทคนิค" -->
+                        <div class="border-b border-slate-700/80 pb-4">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-9 h-9 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center border border-cyan-500/30">
+                                    <i class="fa-solid fa-sliders text-sm"></i>
+                                </div>
+                                <h2 class="text-xl font-bold tracking-tight text-white">ส่วนข้อมูลเทคนิค</h2>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-1">สเปกและรายละเอียดเชิงเทคนิคงาน UX/UI</p>
+                        </div>
+
+                        <!-- Tech Info List Items matching wireframe categories -->
+                        <div class="space-y-4">
+                            
+                            <!-- 1. ประเภทของ UX UI -->
+                            <div class="bg-slate-900/60 rounded-2xl p-4 border border-slate-700/50 hover:border-slate-600 transition">
+                                <span class="text-xs text-slate-400 block font-medium mb-1 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-shapes text-cyan-400 text-[11px]"></i> ประเภทของ UX UI
+                                </span>
+                                <span class="text-sm font-semibold text-slate-100 block">
+                                    Responsive Web & Mobile Application Design
+                                </span>
+                                <span class="text-[11px] text-slate-400 mt-0.5 block">
+                                    (รองรับ Desktop, Tablet, iOS & Android)
+                                </span>
+                            </div>
+
+                            <!-- 2. สไตล์ของ UX UI -->
+                            <div class="bg-slate-900/60 rounded-2xl p-4 border border-slate-700/50 hover:border-slate-600 transition">
+                                <span class="text-xs text-slate-400 block font-medium mb-1 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-wand-magic-sparkles text-cyan-400 text-[11px]"></i> สไตล์ของ UX UI
+                                </span>
+                                <span class="text-sm font-semibold text-slate-100 block">
+                                    Modern Clean, Glassmorphism & Micro-interactions
+                                </span>
+                                <span class="text-[11px] text-slate-400 mt-0.5 block">
+                                    ดีไซน์ทันสมัย อ่านง่าย สบายตา สไตล์ Tech & Modern SaaS
+                                </span>
+                            </div>
+
+                            <!-- 3. จำนวนหน้า -->
+                            <div class="bg-slate-900/60 rounded-2xl p-4 border border-slate-700/50 hover:border-slate-600 transition">
+                                <span class="text-xs text-slate-400 block font-medium mb-1 flex items-center gap-1.5">
+                                    <i class="fa-regular fa-copy text-cyan-400 text-[11px]"></i> จำนวนหน้า
+                                </span>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm font-semibold text-slate-100">
+                                        12 หน้าหลัก + Design System UI Kit
+                                    </span>
+                                    <span class="bg-cyan-950 text-cyan-300 text-[10px] font-mono px-2 py-0.5 rounded border border-cyan-800">
+                                        Figma Auto-Layout 5.0
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Additional Technical Specs -->
+                            <div class="grid grid-cols-2 gap-3 pt-1">
+                                <div class="bg-slate-900/40 p-3 rounded-xl border border-slate-700/40 text-center">
+                                    <div class="text-[10px] text-slate-400">เครื่องมือหลัก</div>
+                                    <div class="text-xs font-bold text-slate-200 mt-0.5">Figma & Tailwind</div>
+                                </div>
+                                <div class="bg-slate-900/40 p-3 rounded-xl border border-slate-700/40 text-center">
+                                    <div class="text-[10px] text-slate-400">การแก้ไข</div>
+                                    <div class="text-xs font-bold text-slate-200 mt-0.5">แก้ฟรี 3 ครั้ง</div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Footer note inside Tech Box -->
+                    <div class="mt-6 pt-4 border-t border-slate-700/70 text-[11px] text-slate-400 flex items-center justify-between">
+                        <span><i class="fa-solid fa-shield-halved text-cyan-400 mr-1"></i> รับประกันไฟล์สมบูรณ์ 100%</span>
+                        <span class="text-slate-400">เวอร์ชัน 2.4</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LEFT COLUMN - BOTTOM: Highlights & Deliverables Box (.box3) -->
+            <div class="lg:col-span-8 flex flex-col">
+                <div class="box3 bg-white rounded-3xl p-6 shadow-sm border border-slate-200 flex-1 flex flex-col justify-between">
+                    <div class="space-y-6">
+                        
+                        <!-- Header with Tab Navigation -->
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                                    <i class="fa-solid fa-list-check"></i>
+                                </div>
+                                <h2 class="text-lg font-bold text-slate-900">รายละเอียดงาน & สิ่งที่จะได้รับ</h2>
+                            </div>
+
+                            <!-- Toggle Tabs -->
+                            <div class="flex bg-slate-100 p-1 rounded-xl text-xs font-semibold self-start sm:self-auto">
+                                <button onclick="switchDetailsTab('highlights')" id="tab-btn-highlights" class="px-3.5 py-1.5 rounded-lg bg-white text-slate-900 shadow-xs transition">
+                                    จุดเด่นของงาน
+                                </button>
+                                <button onclick="switchDetailsTab('deliverables')" id="tab-btn-deliverables" class="px-3.5 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 transition">
+                                    สิ่งที่จะได้รับในไฟล์
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- TAB 1: จุดเด่นของงาน -->
+                        <div id="tab-content-highlights" class="space-y-4">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">
+                                <i class="fa-solid fa-star text-amber-400 mr-1"></i> จุดเด่นของงาน (Key Highlights)
+                            </h3>
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                                <div class="flex gap-3 p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
+                                    <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                        <i class="fa-solid fa-check text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-bold text-slate-900">Complete Design System</div>
+                                        <div class="text-slate-500 mt-0.5">มี Color Palette, Typography Scale, Spacing และ Icon Grid ครบถ้วน</div>
+                                    </div>
+                                </div>
+
+                                <div class="flex gap-3 p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
+                                    <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                        <i class="fa-solid fa-check text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-bold text-slate-900">High Conversion UX Flow</div>
+                                        <div class="text-slate-500 mt-0.5">วางองค์ประกอบปุ่ม และ Call-to-Action เพื่อกระตุ้นยอดขายโดยเฉพาะ</div>
+                                    </div>
+                                </div>
+
+                                <div class="flex gap-3 p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
+                                    <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                        <i class="fa-solid fa-check text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-bold text-slate-900">Auto-Layout 5.0 & Variants</div>
+                                        <div class="text-slate-500 mt-0.5">ปรับแก้ขนาดข้อความ กล่อง และยืดหดตามคอนเทนต์ได้อย่างสมบูรณ์แบบ</div>
+                                    </div>
+                                </div>
+
+                                <div class="flex gap-3 p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
+                                    <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                        <i class="fa-solid fa-check text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-bold text-slate-900">Dark Mode & Light Mode</div>
+                                        <div class="text-slate-500 mt-0.5">รองรับการสลับธีมทั้งสองรูปแบบ พร้อม Color Variables ในตัว</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB 2: สิ่งที่จะได้รับในไฟล์ -->
+                        <div id="tab-content-deliverables" class="hidden space-y-4">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">
+                                <i class="fa-solid fa-box-open text-cyan-500 mr-1"></i> สิ่งที่จะได้รับในไฟล์ (Deliverables)
+                            </h3>
+
+                            <ul class="space-y-3 text-xs text-slate-600">
+                                <li class="flex items-start gap-3 p-3 rounded-xl bg-slate-50">
+                                    <i class="fa-solid fa-file-code text-indigo-600 text-base mt-0.5"></i>
+                                    <div>
+                                        <strong class="text-slate-900 block">1. ต้นฉบับไฟล์ Figma (.FIG Source File)</strong>
+                                        <span class="text-slate-500">จัดหมวดหมู่ Layer ชัดเจน แยก Component และ Page อย่างเป็นระบบ</span>
+                                    </div>
+                                </li>
+                                <li class="flex items-start gap-3 p-3 rounded-xl bg-slate-50">
+                                    <i class="fa-solid fa-code text-emerald-600 text-base mt-0.5"></i>
+                                    <div>
+                                        <strong class="text-slate-900 block">2. HTML5 / Tailwind CSS Starter Code</strong>
+                                        <span class="text-slate-500">ซอร์สโค้ดหน้าเว็บต้นแบบ Responsive พร้อมนำไปพัฒนาต่อร่วมกับทีม Dev</span>
+                                    </div>
+                                </li>
+                                <li class="flex items-start gap-3 p-3 rounded-xl bg-slate-50">
+                                    <i class="fa-solid fa-book-open text-amber-600 text-base mt-0.5"></i>
+                                    <div>
+                                        <strong class="text-slate-900 block">3. Style Guide & Font Asset Package</strong>
+                                        <span class="text-slate-500">คู่มือแนะนำโทนสี ฟอนต์ และ Commercial License Certificate</span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-100 mt-4 flex items-center justify-between text-xs text-slate-400">
+                        <span><i class="fa-regular fa-clock mr-1"></i> จัดส่งไฟล์ทันทีหลังชำระเงิน</span>
+                        <a href="#" onclick="showToast('กำลังเปิดเอกสารคู่มือการใช้งาน...', 'info'); return false;" class="text-indigo-600 hover:underline font-semibold">ดูตัวอย่างเอกสารคู่มือ</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN - BOTTOM: Order Action Box (.box2) -->
+            <div class="lg:col-span-4 flex flex-col">
+                <div class="box2 bg-white rounded-3xl p-6 shadow-sm border border-slate-200 flex-1 flex flex-col justify-between relative overflow-hidden">
+                    
+                    <div class="space-y-5">
+                        <!-- Pricing Badge -->
+                        <div class="flex items-center justify-between">
+                            <span class="bg-rose-100 text-rose-700 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+                                <i class="fa-solid fa-fire text-[10px]"></i> โปรโมชันพิเศษ -36%
+                            </span>
+                            <span class="text-xs text-slate-400">เหลือเวลาอีก 2 วัน</span>
+                        </div>
+
+                        <!-- Price display -->
+                        <div>
+                            <div class="flex items-baseline gap-2">
+                                <span class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">฿2,490</span>
+                                <span class="text-base text-slate-400 line-through">฿3,900</span>
+                            </div>
+                            <p class="text-xs text-emerald-600 font-medium mt-1 flex items-center gap-1">
+                                <i class="fa-solid fa-circle-check"></i> รวม VAT 7% และสิทธิ์การใช้งานเชิงพาณิชย์
+                            </p>
+                        </div>
+
+                        <!-- Highlights Quick Points -->
+                        <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-100 space-y-2 text-xs text-slate-600">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-bolt text-amber-500"></i>
+                                <span>ดาวน์โหลดไฟล์ได้ทันทีหลังสั่งซื้อสำเร็จ</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-headset text-indigo-500"></i>
+                                <span>บริการหลังการขาย และอัปเดตฟรี 6 เดือน</span>
+                            </div>
+                        </div>
+
+                        <!-- Promotion Coupon Input -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">ใส่โค้ดส่วนลดเพิ่มเติม</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="promo-code" placeholder="เช่น AURA10" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs uppercase font-mono focus:ring-2 focus:ring-cyan-500 outline-none">
+                                <button type="button" onclick="applyPromo()" class="bg-slate-900 text-white text-xs font-medium px-3.5 py-2 rounded-xl hover:bg-slate-800 transition">
+                                    ใช้โค้ด
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Button Box matching cyan "สั่งซื้อ" button in user mockup -->
+                    <div class="pt-6 border-t border-slate-100 mt-6 space-y-3">
+                        
+                        <!-- Cyan Action Button ("สั่งซื้อ") -->
+                        <button type="button" onclick="openCheckoutModal()" 
+                                class="w-full bg-cyan-400 hover:bg-cyan-500 text-slate-950 font-extrabold text-lg py-4 px-6 rounded-2xl shadow-lg shadow-cyan-300/60 hover:shadow-cyan-400/80 transition-all duration-200 flex items-center justify-center gap-3 transform hover:-translate-y-0.5 active:translate-y-0">
+                            <i class="fa-solid fa-cart-shopping text-base"></i>
+                            <span>สั่งซื้อ</span>
+                        </button>
+
+                        <div class="text-center">
+                            <span class="text-[11px] text-slate-400 font-medium">
+                                <i class="fa-solid fa-lock text-emerald-600 mr-1"></i> ชำระเงินปลอดภัยด้วย SSL 256-bit
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- LIGHTBOX MODAL FOR FULLSIZE IMAGE VIEWING -->
+    <div id="lightbox-modal" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center p-4 sm:p-8">
+        <button onclick="closeLightbox()" class="absolute top-6 right-6 w-12 h-12 rounded-full bg-slate-800/80 text-white flex items-center justify-center hover:bg-rose-600 transition text-lg z-10">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="max-w-5xl w-full max-h-[85vh] flex flex-col items-center">
+            <img id="lightbox-img" src="" alt="Full Preview" class="max-w-full max-h-[75vh] object-contain rounded-2xl shadow-2xl border border-slate-700">
+            <div id="lightbox-caption" class="text-slate-200 text-sm mt-4 font-medium text-center"></div>
+        </div>
+    </div>
+
+    <!-- QUICK CHECKOUT / ORDER MODAL -->
+    <div id="checkout-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center p-4">
+        <div id="checkout-card" class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-100 transform scale-95 transition-transform duration-300 relative overflow-hidden">
+            
+            <button onclick="closeCheckoutModal()" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-100 text-slate-400 hover:text-slate-800 flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-cyan-100 text-cyan-600 flex items-center justify-center font-bold text-lg">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-slate-900 leading-tight">ยืนยันคำสั่งซื้อ</h3>
+                    <p class="text-xs text-slate-500">สรุปยอดชำระและเลือกช่องทางการชำระเงิน</p>
+                </div>
+            </div>
+
+            <!-- Order Brief -->
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/80 mb-6 space-y-2 text-xs">
+                <div class="flex justify-between text-slate-600">
+                    <span>สินค้า:</span>
+                    <span class="font-bold text-slate-900">Web UX/UI Design System & Service</span>
+                </div>
+                <div class="flex justify-between text-slate-600">
+                    <span>ราคาแพ็กเกจ:</span>
+                    <span class="font-medium text-slate-900">฿2,490.00</span>
+                </div>
+                <div id="promo-row" class="hidden flex justify-between text-emerald-600 font-medium">
+                    <span>ส่วนลดโค้ด (<span id="promo-code-name"></span>):</span>
+                    <span id="promo-discount-val">-฿200.00</span>
+                </div>
+                <div class="flex justify-between border-t border-slate-200 pt-2 text-sm font-bold text-slate-900">
+                    <span>ยอดชำระสุทธิ:</span>
+                    <span class="text-cyan-600 text-lg" id="final-checkout-price">฿2,490.00</span>
+                </div>
+            </div>
+
+            <!-- Customer Info Form -->
+            <form onsubmit="confirmOrder(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">อีเมลสำหรับรับไฟล์งาน <span class="text-rose-500">*</span></label>
+                    <input type="email" required placeholder="name@example.com" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-cyan-500 outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">เลือกช่องทางชำระเงิน</label>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50">
+                            <input type="radio" name="paymethod" checked value="promptpay" class="text-cyan-600">
+                            <span class="font-medium">พร้อมเพย์ QR Code</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50">
+                            <input type="radio" name="paymethod" value="card" class="text-cyan-600">
+                            <span class="font-medium">บัตรเครดิต/เดบิต</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" id="confirm-pay-btn" class="w-full bg-cyan-400 hover:bg-cyan-500 text-slate-950 font-bold py-3.5 px-6 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm mt-4">
+                    <i class="fa-solid fa-lock text-xs"></i>
+                    <span>ยืนยันการชำระเงิน <span id="btn-pay-price">฿2,490.00</span></span>
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+    <script>
+        // Slide Gallery Data
+        const slidesData = [
+            {
+                img: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=1200&q=80",
+                title: "ดูรูปดีไซน์เว็บ: หน้า Dashboard & UI Components",
+                desc: "ตัวอย่างเลย์เอาต์ระบบจัดการหลังบ้าน พร้อมดีไซน์ Responsive แบบพรีเมียม"
+            },
+            {
+                img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80",
+                title: "ดูรูปดีไซน์เว็บ: Mobile App Analytics & Reports",
+                desc: "กราฟสถิติการใช้งาน และหน้าจอมือถือที่ปรับขนาดแบบ Fluid Responsive"
+            },
+            {
+                img: "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?auto=format&fit=crop&w=1200&q=80",
+                title: "ดูรูปดีไซน์เว็บ: User Flow & Wireframe System",
+                desc: "โครงสร้าง Wireframe แสดงเส้นทางของผู้ใช้ (User Journey) อย่างละเอียด"
+            }
+        ];
+
+        let currentSlideIndex = 0;
+        let appliedDiscount = 0;
+        let jsConfetti = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof JSConfetti !== 'undefined') {
+                jsConfetti = new JSConfetti();
+            }
+        });
+
+        // Slide navigation functions
+        function setSlide(index) {
+            currentSlideIndex = index;
+            const slide = slidesData[index];
+
+            const imgEl = document.getElementById('main-slide-img');
+            const titleEl = document.getElementById('slide-title-text');
+            const descEl = document.getElementById('slide-desc-text');
+            const counterEl = document.getElementById('current-slide-idx');
+            const badgeEl = document.getElementById('slide-num-badge');
+
+            // Fade transition animation
+            imgEl.style.opacity = '0.3';
+            setTimeout(() => {
+                imgEl.src = slide.img;
+                titleEl.textContent = slide.title;
+                descEl.textContent = slide.desc;
+                counterEl.textContent = index + 1;
+                badgeEl.textContent = index + 1;
+                imgEl.style.opacity = '1';
+            }, 150);
+
+            // Thumbnail indicator active updates
+            for (let i = 0; i < 3; i++) {
+                const thumbBtn = document.getElementById(`thumb-${i}`);
+                if (i === index) {
+                    thumbBtn.classList.add('thumbnail-active', 'opacity-100');
+                    thumbBtn.classList.remove('opacity-70');
+                    thumbBtn.setAttribute('aria-selected', 'true');
+                } else {
+                    thumbBtn.classList.remove('thumbnail-active');
+                    thumbBtn.classList.add('opacity-70');
+                    thumbBtn.setAttribute('aria-selected', 'false');
+                }
+            }
+        }
+
+        function nextSlide() {
+            const nextIdx = (currentSlideIndex + 1) % slidesData.length;
+            setSlide(nextIdx);
+        }
+
+        function prevSlide() {
+            const prevIdx = (currentSlideIndex - 1 + slidesData.length) % slidesData.length;
+            setSlide(prevIdx);
+        }
+
+        // Details Box Tabs Switcher (.box3)
+        function switchDetailsTab(tabName) {
+            const btnHighlights = document.getElementById('tab-btn-highlights');
+            const btnDeliverables = document.getElementById('tab-btn-deliverables');
+            const contentHighlights = document.getElementById('tab-content-highlights');
+            const contentDeliverables = document.getElementById('tab-content-deliverables');
+
+            if (tabName === 'highlights') {
+                btnHighlights.className = 'px-3.5 py-1.5 rounded-lg bg-white text-slate-900 shadow-xs transition';
+                btnDeliverables.className = 'px-3.5 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 transition';
+                contentHighlights.classList.remove('hidden');
+                contentDeliverables.classList.add('hidden');
+            } else {
+                btnDeliverables.className = 'px-3.5 py-1.5 rounded-lg bg-white text-slate-900 shadow-xs transition';
+                btnHighlights.className = 'px-3.5 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 transition';
+                contentDeliverables.classList.remove('hidden');
+                contentHighlights.classList.add('hidden');
+            }
+        }
+
+        // Lightbox Zoom
+        function openLightbox() {
+            const modal = document.getElementById('lightbox-modal');
+            const img = document.getElementById('lightbox-img');
+            const caption = document.getElementById('lightbox-caption');
+
+            img.src = slidesData[currentSlideIndex].img;
+            caption.textContent = slidesData[currentSlideIndex].title;
+
+            modal.classList.remove('pointer-events-none', 'opacity-0');
+        }
+
+        function closeLightbox() {
+            const modal = document.getElementById('lightbox-modal');
+            modal.classList.add('pointer-events-none', 'opacity-0');
+        }
+
+        // Promo Code
+        function applyPromo() {
+            const codeInput = document.getElementById('promo-code');
+            const code = codeInput.value.trim().toUpperCase();
+
+            if (!code) {
+                showToast('กรุณากรอกรหัสส่วนลด', 'warning');
+                return;
+            }
+
+            if (code === 'AURA10') {
+                appliedDiscount = 250;
+                showToast('ใช้โค้ดส่วนลด ฿250 สำเร็จ!', 'success');
+            } else {
+                showToast('ไม่พบโค้ดส่วนลดนี้ หรือหมดอายุแล้ว', 'error');
+                return;
+            }
+
+            updatePriceDisplays();
+        }
+
+        function updatePriceDisplays() {
+            const basePrice = 2490;
+            const finalPrice = Math.max(0, basePrice - appliedDiscount);
+
+            const formattedFinal = '฿' + finalPrice.toLocaleString('th-TH') + '.00';
+            document.getElementById('final-checkout-price').textContent = formattedFinal;
+            document.getElementById('btn-pay-price').textContent = formattedFinal;
+
+            if (appliedDiscount > 0) {
+                document.getElementById('promo-row').classList.remove('hidden');
+                document.getElementById('promo-code-name').textContent = 'AURA10';
+                document.getElementById('promo-discount-val').textContent = '-฿' + appliedDiscount.toLocaleString('th-TH') + '.00';
+            }
+        }
+
+        // Order & Checkout Modal
+        function openCheckoutModal() {
+            const modal = document.getElementById('checkout-modal');
+            const card = document.getElementById('checkout-card');
+
+            updatePriceDisplays();
+
+            modal.classList.remove('pointer-events-none', 'opacity-0');
+            card.classList.remove('scale-95');
+            card.classList.add('scale-100');
+        }
+
+        function closeCheckoutModal() {
+            const modal = document.getElementById('checkout-modal');
+            const card = document.getElementById('checkout-card');
+
+            card.classList.remove('scale-100');
+            card.classList.add('scale-95');
+            modal.classList.add('pointer-events-none', 'opacity-0');
+        }
+
+        function confirmOrder(e) {
+            e.preventDefault();
+
+            const btn = document.getElementById('confirm-pay-btn');
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin text-sm"></i> <span>กำลังสร้างคำสั่งซื้อ...</span>`;
+
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-lock text-xs"></i> <span>ยืนยันการชำระเงิน</span>`;
+
+                closeCheckoutModal();
+
+                showToast('สั่งซื้อสำเร็จ! กำลังส่งลิงก์ดาวน์โหลดไปยังอีเมลของคุณ', 'success');
+
+                if (jsConfetti) {
+                    jsConfetti.addConfetti({
+                        emojis: ['⚡️', '🎨', '✨', '📦'],
+                        confettiNumber: 70,
+                    });
+                }
+            }, 1800);
+        }
+
+        // Wishlist & Share actions
+        function toggleWishlist() {
+            const btn = document.getElementById('wishlist-btn');
+            const icon = btn.querySelector('i');
+            
+            if (icon.classList.contains('fa-regular')) {
+                icon.className = 'fa-solid fa-heart text-rose-500';
+                showToast('บันทึกในรายการที่ชอบเรียบร้อย', 'success');
+            } else {
+                icon.className = 'fa-regular fa-heart';
+                showToast('ลบออกจากรายการที่ชอบแล้ว', 'info');
+            }
+        }
+
+        function shareProject() {
+            const tempInput = document.createElement('input');
+            tempInput.value = window.location.href;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            showToast('คัดลอกลิงก์โปรเจกต์ลงคลิปบอร์ดแล้ว', 'success');
+        }
+
+        // Toast System
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+
+            let bgClass = 'bg-slate-900 text-white';
+            let icon = 'fa-circle-info text-cyan-400';
+
+            if (type === 'success') {
+                bgClass = 'bg-slate-900 text-slate-100 border border-emerald-500/40';
+                icon = 'fa-circle-check text-emerald-400';
+            } else if (type === 'warning') {
+                bgClass = 'bg-slate-900 text-amber-100 border border-amber-500/40';
+                icon = 'fa-triangle-exclamation text-amber-400';
+            } else if (type === 'error') {
+                bgClass = 'bg-slate-900 text-rose-100 border border-rose-500/40';
+                icon = 'fa-circle-xmark text-rose-400';
+            }
+
+            toast.className = `toast-enter flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl ${bgClass} text-xs font-medium pointer-events-auto min-w-[260px] max-w-sm`;
+            toast.innerHTML = `
+                <i class="fa-solid ${icon} text-base flex-shrink-0"></i>
+                <span class="flex-1">${message}</span>
+                <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('toast-enter');
+                toast.classList.add('toast-exit');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
